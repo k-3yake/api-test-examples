@@ -1,0 +1,9 @@
+spring:
+  datasource:
+    url: hogehoge
+    username: root
+    password: root
+    driverClassName: com.mysql.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
