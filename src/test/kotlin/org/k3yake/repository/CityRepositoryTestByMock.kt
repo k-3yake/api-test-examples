@@ -5,11 +5,6 @@ import mockit.Injectable
 import mockit.Tested
 import org.junit.Test
 import org.k3yake.domain.CityDomain
-import org.k3yake.repository.City
-import org.k3yake.repository.CityDomainRepository
-import org.k3yake.repository.CityRepository
-import org.k3yake.repository.Country
-import org.k3yake.repository.CountryRepository
 import org.assertj.core.api.Assertions.*
 
 /**
@@ -44,24 +39,25 @@ class CityRepositoryTestByMock {
             val country = Country("notExistCountry")
             countryRepository.findByName(country.name); result = null
             countryRepository.save(country); result = country
-            cityReposiotry.save(City(name = "name1", country = country))
+            cityReposiotry.save(City(name = "name1", country = country));result = City(id=1,name = "name1", country = country)
         }}
 
         //実行
-        val city = CityDomain(name = "name1", country = "notExistCountry")
-        cityDomainRepository.create(city)
+        val created = cityDomainRepository.create(CityDomain(name = "name1", country = "notExistCountry"))
+        assertThat(created).isEqualTo(CityDomain(1,"name1","notExistCountry"))
     }
 
     @Test
-    fun Cityの保存のテスト_countryが既にある場合_Cityのみが登録される_テーブルの状態確認によるテスト(){
+    fun Cityの保存のテスト_countryが既にある場合_Cityのみが登録される(){
         //準備
         object: Expectations() { init{
             val country = Country("Japan")
             countryRepository.findByName(country.name); result = country
-            cityReposiotry.save(City(name = "name1", country = country))
+            cityReposiotry.save(City(name = "name1", country = country));result = City(id=1,name = "name1", country = country)
         }}
 
         //実行
-        cityDomainRepository.create(CityDomain(name = "name1", country = "Japan"))
+        val created = cityDomainRepository.create(CityDomain(name = "name1", country = "Japan"))
+        assertThat(created).isEqualTo(CityDomain(1,"name1","Japan"))
     }
 }
