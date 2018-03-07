@@ -15,25 +15,28 @@ class CityDomainRepository {
     @Autowired lateinit var cityRepository: CityRepository
     @Autowired lateinit var countryRepository: CountryRepository
 
-    fun findCity(name: String): CityDomain {
-        val city = cityRepository.findByName(name)
-        return CityDomain(city.id,city.name,city.country.name)
+    fun findCity(name: String): CityDomain? {
+        val city = cityRepository.findByName(name)?.let { it ->
+            return CityDomain(it.id,it.name,it.country.name)
+        }
+        return null
     }
 
-    fun create(city: CityDomain) {
+    fun create(city: CityDomain):CityDomain {
         val existCountry = countryRepository.findByName(city.country)
         if(existCountry == null){
-            cityRepository.save(City(name = city.name, country = countryRepository.save(Country(name = city.country))))
+            val saved = cityRepository.save(City(name = city.name, country = countryRepository.save(Country(name = city.country))))
+            return city.copy(id=saved.id)
         } else {
-            cityRepository.save(City(name = city.name, country = existCountry))
+            val saved = cityRepository.save(City(name = city.name, country = existCountry))
+            return city.copy(id=saved.id)
         }
     }
 }
 
 @Repository
 interface CityRepository : JpaRepository<City,Long> {
-    fun findByNameAndCountryId(name: String,id: Long): City
-    fun findByName(name: String): City
+    fun findByName(name: String): City?
 }
 
 @Entity
@@ -42,17 +45,9 @@ data class City(
     val id: Int = 0,
     @Column(nullable = false)
     val name: String = "",
-    @Column
-    val state: String = "",
-    @Column
-    val map: String = "",
     @ManyToOne
     var country: Country = Country()
-){
-    fun country():String{
-        return this.country.name
-    }
-}
+)
 
 @Repository
 interface CountryRepository : JpaRepository<Country,Long> {

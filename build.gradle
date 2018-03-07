@@ -1,3 +1,13 @@
+apply plugin: 'java' // Required for Kotlin integration
+apply plugin: 'kotlin' // Required for Kotlin integration
+apply plugin: "kotlin-spring" // See https://kotlinlang.org/docs/reference/compiler-plugins.html#kotlin-spring-compiler-plugin
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
+
+sourceSets {
+	test.kotlin.srcDirs += 'src/test-api/kotlin'
+}
+
 buildscript {
 	ext.kotlin_version = '1.2.21' // Required for Kotlin integration
 	repositories {
@@ -12,10 +22,6 @@ buildscript {
 	}
 }
 
-apply plugin: 'kotlin' // Required for Kotlin integration
-apply plugin: "kotlin-spring" // See https://kotlinlang.org/docs/reference/compiler-plugins.html#kotlin-spring-compiler-plugin
-apply plugin: 'org.springframework.boot'
-apply plugin: 'io.spring.dependency-management'
 
 jar {
 	baseName = 'gs-rest-service'
@@ -43,4 +49,5 @@ dependencies {
 	testCompile 'org.jmockit:jmockit:1.8'
 	testCompile 'org.assertj:assertj-core:3.9.1'
 
+    compile 'org.testng:testng:6.9.6'
 }

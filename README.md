@@ -1,13 +1,12 @@
 #DONE
-* サービス層のテスト（Repositoryのモック化）
-* サービス層のテスト（DbSetup）
-* サービス層のテスト（DbUnit）
-* サービス層のテスト（DbUnitのDbSetup風）
-* APIレイヤーテスト（spring-boot-test + DbSetup）
-* APIレイヤーテスト（Controllerインジェクション + DbSetup）
-* APIレイヤーテスト（Springでバリデーションやらリクエストの組み立てやらしている場合）
+* SpringBootTestの例
 
 #DOING
 
+
 #TODO
-コンテナ起動高速化
+* SpringBootTestの例に、外部API呼び出しのモック例を作成
+AutoConfigureTestDatabaseをAPiテストで使わないで良いようにする
+* Controllerインジェクションによるテスト例
+
+
