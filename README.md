@@ -2,9 +2,10 @@
 * SpringBootTestの例
 
 #DOING
-Javaですらモックが上手く行かない。ライブラリバージョン変更。
+3/8　２３時前でなぜ上手くいかなかったか確認（dpendencies?）
 * SpringBootTestの例に、外部API呼び出しのモック例を作成
 
 #TODO
-AutoConfigureTestDatabaseをAPiテストで使わないで良いようにする
+autoIncrementがリセットされるようにdbsetupを拡張
+Javaのテストを削除
 * Controllerインジェクションによるテスト例

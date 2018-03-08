@@ -41,15 +41,17 @@ class CityApiTestBySpringBootTest {
     lateinit var mockServer: MockMvc
     @Autowired
     lateinit var dataSource: DataSource
+/*
     @MockBean
     lateinit var cityRepository:CityDomainRepository
-
+*/
 
     @Test
     fun postTest_未登録の都市の場合_() {
         //準備
         dbSetup(to = dataSource) {
             deleteAllFrom("city", "country")
+            sql("ALTER TABLE city ALTER COLUMN id RESTART WITH 1")
             insertInto("country") {
                 columns("id", "name")
                 values(1, "Japan")
