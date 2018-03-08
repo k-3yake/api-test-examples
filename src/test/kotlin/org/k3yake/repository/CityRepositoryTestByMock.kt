@@ -1,15 +1,18 @@
 package org.k3yake.repository
 
+/*
 import mockit.Expectations
 import mockit.Injectable
 import mockit.Tested
 import org.junit.Test
 import org.k3yake.domain.CityDomain
 import org.assertj.core.api.Assertions.*
+*/
 
 /**
  * Created by katsuki-miyake on 18/02/24.
  */
+/*
 class CityRepositoryTestByMock {
     @Tested
     lateinit var cityDomainRepository: CityDomainRepository
@@ -60,4 +63,4 @@ class CityRepositoryTestByMock {
         val created = cityDomainRepository.create(CityDomain(name = "name1", country = "Japan"))
         assertThat(created).isEqualTo(CityDomain(1,"name1","Japan"))
     }
-}
+}*/
