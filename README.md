@@ -8,5 +8,3 @@ Javaですらモックが上手く行かない。ライブラリバージョン�
 #TODO
 AutoConfigureTestDatabaseをAPiテストで使わないで良いようにする
 * Controllerインジェクションによるテスト例
-
-

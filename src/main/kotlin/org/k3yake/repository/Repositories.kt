@@ -16,7 +16,7 @@ class CityDomainRepository {
     @Autowired lateinit var countryRepository: CountryRepository
 
     fun findCity(name: String): CityDomain? {
-        val city = cityRepository.findByName(name)?.let { it ->
+        cityRepository.findByName(name)?.let { it ->
             return CityDomain(it.id,it.name,it.country.name)
         }
         return null
