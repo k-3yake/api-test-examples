@@ -6,10 +6,12 @@ apply plugin: 'io.spring.dependency-management'
 
 sourceSets {
 	test.kotlin.srcDirs += 'src/test-api/kotlin'
+	test.java.srcDirs += 'src/test-api/java'
 }
 
 buildscript {
 	ext.kotlin_version = '1.2.21' // Required for Kotlin integration
+	ext.spring_boot_version = '1.2.21' // Required for Kotlin integration
 	repositories {
 		jcenter()
 		maven { url "http://repo.spring.io/snapshot" }
@@ -22,7 +24,6 @@ buildscript {
 	}
 }
 
-
 jar {
 	baseName = 'gs-rest-service'
 	version = '0.1.0'
@@ -30,8 +31,6 @@ jar {
 
 repositories {
 	jcenter()
-	maven { url "http://repo.spring.io/snapshot" }
-	maven { url "http://repo.spring.io/milestone" }
 }
 
 dependencies {
