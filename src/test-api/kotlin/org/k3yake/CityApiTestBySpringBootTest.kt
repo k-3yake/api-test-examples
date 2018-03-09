@@ -69,4 +69,31 @@ class CityApiTestBySpringBootTest {
                 .value("name").isEqualTo("ebisu")
                 .value("population").isEqualTo(900000)
     }
+
+    @Test
+    fun postTest_未登録の都市の場合_人口情報を取得出来ない場合エラーとなる() {
+        //準備
+        dbSetup(to = dataSource) {
+            deleteAllFrom("city", "country")
+            sql("ALTER TABLE city ALTER COLUMN id RESTART WITH 1")
+            insertInto("country") {
+                columns("id", "name")
+                values(1, "Japan")
+            }
+        }.launch()
+        given(populationApi.get("ebisu")).willThrow(RuntimeException())
+
+        //実行
+        mockServer.perform(MockMvcRequestBuilders.post("/city")
+                .content("""{"name":"ebisu", "country":"Japan"}""".toString())
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is5xxServerError())
+
+        //確認
+        Assertions.assertThat(Table(dataSource, "country"))
+                .hasNumberOfRows(1)
+                .row(0)
+        Assertions.assertThat(Table(dataSource, "city"))
+                .hasNumberOfRows(0)
+    }
 }

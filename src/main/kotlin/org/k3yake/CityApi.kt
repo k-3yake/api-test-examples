@@ -3,19 +3,11 @@ package org.k3yake
 import org.k3yake.domain.CityDomain
 import org.k3yake.repository.CityDomainRepository
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.stereotype.Component
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import org.springframework.util.StringUtils
-import org.springframework.validation.Errors
-import org.springframework.validation.Validator
-import org.springframework.web.bind.MethodArgumentNotValidException
-import org.springframework.web.bind.WebDataBinder
 import org.springframework.web.bind.annotation.*
-import org.springframework.web.context.request.WebRequest
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler
 import javax.validation.Valid
 
@@ -26,6 +18,11 @@ import javax.validation.Valid
 @ControllerAdvice
 @RestController
 class CityController: ResponseEntityExceptionHandler() {
+
+    @ExceptionHandler(Throwable::class)
+    fun handleEntityNotFound(ex: Throwable): ResponseEntity<Any> {
+        return ResponseEntity(CityError(ex.message.orEmpty(),ex.stackTrace.toString()),HttpStatus.INTERNAL_SERVER_ERROR)
+    }
 
     @Autowired
     lateinit var cityService:CityService
@@ -38,6 +35,7 @@ class CityController: ResponseEntityExceptionHandler() {
 
     data class CityRequest(val name:String="",val country:String="")
     data class CityResponse(val id:Int)
+    data class CityError(val message:String,val detail:String)
 }
 
 @Transactional
@@ -51,4 +49,5 @@ class CityService {
         return cityDomainRepositoryRepository.create(city)
     }
 }
+
 
