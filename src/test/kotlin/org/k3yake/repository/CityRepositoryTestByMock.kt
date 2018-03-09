@@ -1,12 +1,14 @@
 package org.k3yake.repository
 
 
+
 import mockit.Expectations
 import mockit.Injectable
 import mockit.Tested
 import org.junit.Test
 import org.k3yake.domain.CityDomain
 import org.assertj.core.api.Assertions.*
+
 
 
 /**
@@ -19,6 +21,9 @@ class CityRepositoryTestByMock {
     lateinit var cityReposiotry: CityRepository
     @Injectable
     lateinit var countryRepository: CountryRepository
+    @Injectable
+    lateinit var populationApi: PopulationApi
+
 
     @Test
     fun 名前によるCity取得のテスト_名前の一致したcityを返す(){
@@ -40,8 +45,9 @@ class CityRepositoryTestByMock {
         object: Expectations() { init{
             val country = Country("notExistCountry")
             countryRepository.findByName(country.name); result = null
+            populationApi.get("name1");result = PopulationApi.PopulationApiResponse("name1",90);
             countryRepository.save(country); result = country
-            cityReposiotry.save(City(name = "name1", country = country));result = City(id=1,name = "name1", country = country)
+            cityReposiotry.save(City(name = "name1", country = country, population = 90));result = City(id=1,name = "name1", country = country, population = 90)
         }}
 
         //実行
@@ -55,7 +61,8 @@ class CityRepositoryTestByMock {
         object: Expectations() { init{
             val country = Country("Japan")
             countryRepository.findByName(country.name); result = country
-            cityReposiotry.save(City(name = "name1", country = country));result = City(id=1,name = "name1", country = country)
+            populationApi.get("name1"); result = PopulationApi.PopulationApiResponse("name1",90);
+            cityReposiotry.save(City(name = "name1", country = country,population = 90));result = City(id=1,name = "name1", country = country,population = 90)
         }}
 
         //実行

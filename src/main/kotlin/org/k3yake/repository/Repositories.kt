@@ -12,8 +12,12 @@ import javax.persistence.*
  */
 @Repository
 class CityDomainRepository {
-    @Autowired lateinit var cityRepository: CityRepository
-    @Autowired lateinit var countryRepository: CountryRepository
+    @Autowired
+    lateinit var cityRepository: CityRepository
+    @Autowired
+    lateinit var countryRepository: CountryRepository
+    @Autowired
+    lateinit var populationApi: PopulationApi
 
     fun findCity(name: String): CityDomain? {
         cityRepository.findByName(name)?.let { it ->
@@ -24,11 +28,12 @@ class CityDomainRepository {
 
     fun create(city: CityDomain):CityDomain {
         val existCountry = countryRepository.findByName(city.country)
+        val population = populationApi.get(city.name)
         if(existCountry == null){
-            val saved = cityRepository.save(City(name = city.name, country = countryRepository.save(Country(name = city.country))))
+            val saved = cityRepository.save(City(name = city.name, country = countryRepository.save(Country(name = city.country)),population = population.value))
             return city.copy(id=saved.id)
         } else {
-            val saved = cityRepository.save(City(name = city.name, country = existCountry))
+            val saved = cityRepository.save(City(name = city.name, country = existCountry,population = population.value))
             return city.copy(id=saved.id)
         }
     }
@@ -46,7 +51,9 @@ data class City(
     @Column(nullable = false)
     val name: String = "",
     @ManyToOne
-    var country: Country = Country()
+    var country: Country = Country(),
+    @Column
+    val population: Int? = -1
 )
 
 @Repository
@@ -63,3 +70,13 @@ data class Country(
 ){
     constructor(name: String):this(id = 0,name = name)
 }
+
+@Repository
+class PopulationApi {
+    open class PopulationApiResponse(val name: String, val value: Int)
+
+    fun  get(name: String): PopulationApiResponse {
+        throw UnsupportedOperationException()
+    }
+}
+

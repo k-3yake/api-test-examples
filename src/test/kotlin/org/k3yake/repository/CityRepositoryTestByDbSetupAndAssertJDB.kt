@@ -15,6 +15,10 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.junit4.SpringRunner
 import javax.sql.DataSource
 import org.assertj.core.api.Assertions.*
+import org.k3yake.repository.PopulationApi
+import org.mockito.BDDMockito
+import org.mockito.BDDMockito.given
+import org.springframework.boot.test.mock.mockito.MockBean
 
 /**
  * Created by katsuki-miyake on 18/02/24.
@@ -23,8 +27,12 @@ import org.assertj.core.api.Assertions.*
 @SpringBootTest(classes = arrayOf(Application::class))
 @AutoConfigureTestDatabase
 class CityRepositoryTestByDbSetupAndAssertJDB {
-    @Autowired lateinit var cityDomainRepository: CityDomainRepository
-    @Autowired lateinit var dataSource:DataSource
+    @Autowired
+    lateinit var cityDomainRepository: CityDomainRepository
+    @Autowired
+    lateinit var dataSource:DataSource
+    @MockBean
+    lateinit var populationApi: PopulationApi
 
     @Test
     fun 名前によるCity取得のテスト_名前の一致したcityを返す(){
@@ -49,11 +57,12 @@ class CityRepositoryTestByDbSetupAndAssertJDB {
     }
 
     @Test
-    fun Cityの保存のテスト_Countryがまだない場合_CityとCountryが登録される_テーブルの状態確認によるテスト(){
+    fun Cityの保存のテスト_Countryがまだない場合_CityとCountryが登録される(){
         //準備
         dbSetup(to = dataSource) {
             deleteAllFrom("city","country")
         }.launch()
+        given(populationApi.get("name1")).willReturn(PopulationApi.PopulationApiResponse("name1",90))
 
         //実行
         val city = CityDomain(name = "name1", country = "notExistCountry")
@@ -71,33 +80,7 @@ class CityRepositoryTestByDbSetupAndAssertJDB {
     }
 
     @Test
-    fun Cityの保存のテスト_Countryがまだない場合_CityとCountryが登録される_テーブルの変更確認によるテスト(){
-        //準備
-        dbSetup(to = dataSource) {
-            deleteAllFrom("city","country")
-        }.launch()
-        val changes = Changes(dataSource).setStartPointNow() //AssetJ-DBによる変更記録開始
-
-        //実行
-        cityDomainRepository.create(CityDomain(name = "name1", country = "notExistCountry"))
-
-        //確認
-        changes.setEndPointNow() //AssetJ-DBによる変更記録終了
-        Assertions.assertThat(changes)
-                .hasNumberOfChanges(2)
-                .changeOnTable("country")
-                .isCreation()
-                .rowAtEndPoint()
-                .value("name").isEqualTo("notExistCountry")
-                .changeOnTable("city")
-                .isCreation()
-                .rowAtEndPoint()
-                .value("name").isEqualTo("name1")
-    }
-
-
-    @Test
-    fun Cityの保存のテスト_countryが既にある場合_Cityのみが登録される_テーブルの状態確認によるテスト(){
+    fun Cityの保存のテスト_countryが既にある場合_Cityのみが登録される(){
         //準備
         dbSetup(to = dataSource) {
             deleteAllFrom("city","country")
@@ -106,6 +89,7 @@ class CityRepositoryTestByDbSetupAndAssertJDB {
                 values(1, "Japan")
             }
         }.launch()
+        given(populationApi.get("name1")).willReturn(PopulationApi.PopulationApiResponse("name1",90))
 
         //実行
         cityDomainRepository.create(CityDomain(name = "name1", country = "Japan"))
@@ -118,30 +102,5 @@ class CityRepositoryTestByDbSetupAndAssertJDB {
                 .row(0)
                 .value("name").isEqualTo("name1")
                 .value("country_id").isEqualTo(1)
-    }
-
-    @Test
-    fun Cityの保存のテスト_countryが既にある場合_Cityのみが登録される_テーブルの変更確認によるテスト(){
-        //準備
-        dbSetup(to = dataSource) {
-            deleteAllFrom("city","country")
-            insertInto("country"){
-                columns("id", "name")
-                values(1, "Japan")
-            }
-        }.launch()
-        val changes = Changes(dataSource).setStartPointNow() //AssetJ-DBによる変更記録開始
-
-        //実行
-        cityDomainRepository.create(CityDomain(name = "name1", country = "Japan"))
-
-        //確認
-        changes.setEndPointNow()
-        Assertions.assertThat(changes)
-                .hasNumberOfChanges(1)//下のアサーションと組み合わせて、cityテーブルのみ変更されていること（countryが変更されていないこと）が確認出来ている
-                .changeOnTable("city")
-                .isCreation()
-                .rowAtEndPoint()
-                .value("name").isEqualTo("name1")
     }
 }
