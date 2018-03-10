@@ -5,8 +5,8 @@ apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
 
 sourceSets {
-	test.kotlin.srcDirs += 'src/test-api/kotlin'
-	test.java.srcDirs += 'src/test-api/java'
+	test.kotlin.srcDirs += 'src/api-specs/kotlin'
+	test.kotlin.srcDirs += 'src/test-integration/kotlin'
 }
 
 buildscript {

@@ -1,5 +1,6 @@
 package org.k3yake
 
+import org.apache.tomcat.util.ExceptionUtils
 import org.k3yake.domain.CityDomain
 import org.k3yake.repository.CityDomainRepository
 import org.springframework.beans.factory.annotation.Autowired
@@ -10,6 +11,11 @@ import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler
 import javax.validation.Valid
+import kotlin.reflect.jvm.internal.impl.utils.ExceptionUtilsKt
+import java.io.PrintWriter
+import java.io.StringWriter
+
+
 
 
 /**
@@ -19,9 +25,18 @@ import javax.validation.Valid
 @RestController
 class CityController: ResponseEntityExceptionHandler() {
 
+    @ExceptionHandler(CityService.ServiceError::class)
+    fun handleEntityNotFound(ex: CityService.ServiceError): ResponseEntity<Any> {
+        return ResponseEntity(CityError("重複してますよ",null),HttpStatus.CONFLICT)
+    }
+
+
     @ExceptionHandler(Throwable::class)
     fun handleEntityNotFound(ex: Throwable): ResponseEntity<Any> {
-        return ResponseEntity(CityError(ex.message.orEmpty(),ex.stackTrace.toString()),HttpStatus.INTERNAL_SERVER_ERROR)
+        val sw = StringWriter()
+        val pw = PrintWriter(sw)
+        ex.printStackTrace(pw)
+        return ResponseEntity(CityError(ex.message.orEmpty(), sw.toString()),HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
     @Autowired
@@ -35,7 +50,7 @@ class CityController: ResponseEntityExceptionHandler() {
 
     data class CityRequest(val name:String="",val country:String="")
     data class CityResponse(val id:Int)
-    data class CityError(val message:String,val detail:String)
+    data class CityError(val message:String,val detail:String?)
 }
 
 @Transactional
@@ -46,7 +61,14 @@ class CityService {
     lateinit var cityDomainRepositoryRepository: CityDomainRepository
 
     fun create(city: CityDomain):CityDomain {
+        cityDomainRepositoryRepository.find(city.name)?.let {
+            throw ServiceError()
+        }
         return cityDomainRepositoryRepository.create(city)
+    }
+
+    class ServiceError:RuntimeException() {
+
     }
 }
 

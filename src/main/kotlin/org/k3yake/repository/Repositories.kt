@@ -30,6 +30,14 @@ class CityDomainRepository {
             return city.copy(id=saved.id)
         }
     }
+
+    fun find(name: String): CityDomain? {
+        val city = cityRepository.findByName(name)
+        city?.let {
+            return CityDomain(city.id, city.name, city.country.name)
+        }
+        return null
+    }
 }
 
 @Repository

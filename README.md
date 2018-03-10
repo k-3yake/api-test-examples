@@ -6,5 +6,8 @@
 
 
 #TODO
+重複登録
+バリデーションエラー
+足りない単体テストの追加
 autoIncrementがリセットされるようにdbsetupを拡張
 * Controllerインジェクションによるテスト例

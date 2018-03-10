@@ -27,35 +27,13 @@ import org.springframework.boot.test.mock.mockito.MockBean
 @RunWith(SpringRunner::class)
 @SpringBootTest(classes = arrayOf(Application::class))
 @AutoConfigureTestDatabase
-class CityRepositoryTestByDbSetupAndAssertJDB {
+class CityDomainRepositoryTest {
     @Autowired
     lateinit var cityDomainRepository: CityDomainRepository
     @Autowired
     lateinit var dataSource:DataSource
     @MockBean
     lateinit var populationApi: PopulationApi
-
-    @Test
-    fun 名前によるCity取得のテスト_名前の一致したcityを返す(){
-        //準備
-        dbSetup(to = dataSource) {
-            deleteAll()
-            insertInto("country"){
-                columns("id", "name")
-                values(1, "Japan")
-            }
-            insertInto("city"){
-                columns("id", "name", "country_id")
-                values(1, "Ebisu", 1)
-            }
-        }.launch()
-
-        //実行
-        val city = cityDomainRepository.findCity("Ebisu")
-
-        //確認
-        assertThat(city).isEqualTo(CityDomain(1,"Ebisu","Japan"))
-    }
 
     @Test
     fun Cityの保存のテスト_Countryがまだない場合_CityとCountryが登録される(){
@@ -103,5 +81,27 @@ class CityRepositoryTestByDbSetupAndAssertJDB {
                 .row(0)
                 .value("name").isEqualTo("name1")
                 .value("country_id").isEqualTo(1)
+    }
+
+    @Test
+    fun City取得のテスト_同じ名前のCityが既にある場合_Cityを返す(){
+        //準備
+        dbSetup(to = dataSource) {
+            deleteAll()
+            insertInto("country"){
+                columns("id", "name")
+                values(1, "Japan")
+            }
+            insertInto("city"){
+                columns("id", "name", "country_id")
+                values(1, "ebisu" ,1)
+            }
+        }.launch()
+
+        //実行
+        val result = cityDomainRepository.find("ebisu")
+
+        //確認
+        assertThat(result).isEqualTo(CityDomain(1,"ebisu","Japan"))
     }
 }
