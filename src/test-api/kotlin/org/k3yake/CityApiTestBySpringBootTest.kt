@@ -1,6 +1,9 @@
 package org.k3yake
 
 
+import com.ninja_squad.dbsetup.Operations.*
+import com.ninja_squad.dbsetup.operation.Operation
+import com.ninja_squad.dbsetup_kotlin.DbSetupBuilder
 import com.ninja_squad.dbsetup_kotlin.dbSetup
 import org.assertj.db.api.Assertions
 import org.assertj.db.type.Table
@@ -41,14 +44,13 @@ class CityApiTestBySpringBootTest {
     fun postTest_未登録の都市の場合_人口情報を付与して登録する() {
         //準備
         dbSetup(to = dataSource) {
-            deleteAllFrom("city", "country")
-            sql("ALTER TABLE city ALTER COLUMN id RESTART WITH 1")
+            deleteAll()
             insertInto("country") {
                 columns("id", "name")
                 values(1, "Japan")
             }
         }.launch()
-        given(populationApi.get("ebisu")).willReturn(PopulationApi.PopulationApiResponse("ebisu",900000))
+        given(populationApi.get("ebisu")).willReturn(PopulationApi.PopulationApiResponse("ebisu", 900000))
 
         //実行
         mockServer.perform(MockMvcRequestBuilders.post("/city")
@@ -74,8 +76,11 @@ class CityApiTestBySpringBootTest {
     fun postTest_未登録の都市の場合_人口情報を取得出来ない場合エラーとなる() {
         //準備
         dbSetup(to = dataSource) {
-            deleteAllFrom("city", "country")
-            sql("ALTER TABLE city ALTER COLUMN id RESTART WITH 1")
+            /*
+                        deleteAllFrom("city", "country")
+                        sql("ALTER TABLE city ALTER COLUMN id RESTART WITH 1")
+            */
+            deleteAll()
             insertInto("country") {
                 columns("id", "name")
                 values(1, "Japan")
@@ -97,3 +102,12 @@ class CityApiTestBySpringBootTest {
                 .hasNumberOfRows(0)
     }
 }
+
+fun DbSetupBuilder.deleteAll() {
+    val tables = listOf("city", "country")
+    deleteAllFrom(tables)
+    tables.forEach {
+        sql("ALTER TABLE ${it} ALTER COLUMN id RESTART WITH 1")
+    }
+}
+

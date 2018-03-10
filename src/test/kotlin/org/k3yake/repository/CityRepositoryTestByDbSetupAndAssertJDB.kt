@@ -15,6 +15,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.junit4.SpringRunner
 import javax.sql.DataSource
 import org.assertj.core.api.Assertions.*
+import org.k3yake.deleteAll
 import org.k3yake.repository.PopulationApi
 import org.mockito.BDDMockito
 import org.mockito.BDDMockito.given
@@ -38,7 +39,7 @@ class CityRepositoryTestByDbSetupAndAssertJDB {
     fun 名前によるCity取得のテスト_名前の一致したcityを返す(){
         //準備
         dbSetup(to = dataSource) {
-            deleteAllFrom("city","country")
+            deleteAll()
             insertInto("country"){
                 columns("id", "name")
                 values(1, "Japan")
@@ -60,7 +61,7 @@ class CityRepositoryTestByDbSetupAndAssertJDB {
     fun Cityの保存のテスト_Countryがまだない場合_CityとCountryが登録される(){
         //準備
         dbSetup(to = dataSource) {
-            deleteAllFrom("city","country")
+            deleteAll()
         }.launch()
         given(populationApi.get("name1")).willReturn(PopulationApi.PopulationApiResponse("name1",90))
 
@@ -83,7 +84,7 @@ class CityRepositoryTestByDbSetupAndAssertJDB {
     fun Cityの保存のテスト_countryが既にある場合_Cityのみが登録される(){
         //準備
         dbSetup(to = dataSource) {
-            deleteAllFrom("city","country")
+            deleteAll()
             insertInto("country"){
                 columns("id", "name")
                 values(1, "Japan")
