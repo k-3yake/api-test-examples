@@ -19,13 +19,6 @@ class CityDomainRepository {
     @Autowired
     lateinit var populationApi: PopulationApi
 
-    fun findCity(name: String): CityDomain? {
-        cityRepository.findByName(name)?.let { it ->
-            return CityDomain(it.id,it.name,it.country.name)
-        }
-        return null
-    }
-
     fun create(city: CityDomain):CityDomain {
         val existCountry = countryRepository.findByName(city.country)
         val population = populationApi.get(city.name)

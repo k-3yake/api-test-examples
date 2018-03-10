@@ -41,7 +41,7 @@ class CityApiTestBySpringBootTest {
     lateinit var populationApi: PopulationApi
 
     @Test
-    fun postTest_未登録の都市の場合_人口情報を付与して登録する() {
+    fun postの仕様_未登録の国の都市の場合_都市と国を登録する() {
         //準備
         dbSetup(to = dataSource) {
             deleteAll()
@@ -72,8 +72,9 @@ class CityApiTestBySpringBootTest {
                 .value("population").isEqualTo(900000)
     }
 
+
     @Test
-    fun postTest_未登録の都市の場合_人口情報を取得出来ない場合エラーとなる() {
+    fun postの仕様_人口情報を取得出来ない場合_エラーとなり登録は行われない() {
         //準備
         dbSetup(to = dataSource) {
             /*
