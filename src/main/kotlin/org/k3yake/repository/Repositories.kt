@@ -13,9 +13,9 @@ import javax.persistence.*
 @Repository
 class CityDomainRepository {
     @Autowired
-    lateinit var cityRepository: CityRepository
+    private lateinit var cityRepository: CityRepository
     @Autowired
-    lateinit var countryRepository: CountryRepository
+    private lateinit var countryRepository: CountryRepository
     @Autowired
     lateinit var populationApi: PopulationApi
 
@@ -41,12 +41,12 @@ class CityDomainRepository {
 }
 
 @Repository
-interface CityRepository : JpaRepository<City,Long> {
+private interface CityRepository : JpaRepository<City,Long> {
     fun findByName(name: String): City?
 }
 
 @Entity
-data class City(
+private data class City(
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Int = 0,
     @Column(nullable = false)
@@ -58,12 +58,12 @@ data class City(
 )
 
 @Repository
-interface CountryRepository : JpaRepository<Country,Long> {
+private interface CountryRepository : JpaRepository<Country,Long> {
     fun findByName(name: String): Country?
 }
 
 @Entity
-data class Country(
+private data class Country(
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0,
     @Column(nullable = false,unique = true)
