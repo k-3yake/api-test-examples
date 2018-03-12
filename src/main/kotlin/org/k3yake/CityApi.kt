@@ -1,6 +1,5 @@
 package org.k3yake
 
-import org.apache.tomcat.util.ExceptionUtils
 import org.k3yake.domain.CityDomain
 import org.k3yake.repository.CityDomainRepository
 import org.springframework.beans.factory.annotation.Autowired
@@ -11,7 +10,6 @@ import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler
 import javax.validation.Valid
-import kotlin.reflect.jvm.internal.impl.utils.ExceptionUtilsKt
 import java.io.PrintWriter
 import java.io.StringWriter
 
@@ -25,8 +23,8 @@ import java.io.StringWriter
 @RestController
 class CityController: ResponseEntityExceptionHandler() {
 
-    @ExceptionHandler(CityService.ServiceError::class)
-    fun handleEntityNotFound(ex: CityService.ServiceError): ResponseEntity<Any> {
+    @ExceptionHandler(CityService.ExistCityError::class)
+    fun handleEntityNotFound(ex: CityService.ExistCityError): ResponseEntity<Any> {
         return ResponseEntity(CityError("重複してますよ",null),HttpStatus.CONFLICT)
     }
 
@@ -62,12 +60,12 @@ class CityService {
 
     fun create(city: CityDomain):CityDomain {
         cityDomainRepositoryRepository.find(city.name)?.let {
-            throw ServiceError()
+            throw ExistCityError()
         }
         return cityDomainRepositoryRepository.create(city)
     }
 
-    class ServiceError:RuntimeException() {
+    class ExistCityError :RuntimeException() {
 
     }
 }

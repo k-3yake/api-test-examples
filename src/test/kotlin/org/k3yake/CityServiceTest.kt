@@ -14,7 +14,7 @@ class CityServiceTest {
     lateinit var cityDomainRepository: CityDomainRepository
 
 
-    @Test(expected = CityService.ServiceError::class)
+    @Test(expected = CityService.ExistCityError::class)
     fun City登録のテスト_既に登録されている都市の場合_エラーを返す(){
         val city = CityDomain(1, "existed", "existed")
         object : Expectations(){init{

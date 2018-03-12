@@ -104,4 +104,26 @@ class CityDomainRepositoryTest {
         //確認
         assertThat(result).isEqualTo(CityDomain(1,"ebisu","Japan"))
     }
+
+    @Test
+    fun City取得のテスト_同じ名前のCityがない場合_nullを返す(){
+        //準備
+        dbSetup(to = dataSource) {
+            deleteAll()
+            insertInto("country"){
+                columns("id", "name")
+                values(1, "Japan")
+            }
+            insertInto("city"){
+                columns("id", "name", "country_id")
+                values(1, "ebisu" ,1)
+            }
+        }.launch()
+
+        //実行
+        val result = cityDomainRepository.find("notExist")
+
+        //確認
+        assertThat(result).isNull()
+    }
 }
