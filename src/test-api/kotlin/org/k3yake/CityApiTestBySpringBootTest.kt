@@ -139,6 +139,7 @@ class CityApiTestBySpringBootTest {
             }
         }.launch()
         given(populationApi.get("ebisu")).willThrow(RuntimeException())
+        val changees = Changes(dataSource).setStartPointNow()
 
         //実行
         mockServer.perform(MockMvcRequestBuilders.post("/city")
@@ -147,11 +148,9 @@ class CityApiTestBySpringBootTest {
                 .andExpect(status().is5xxServerError())
 
         //確認
-        Assertions.assertThat(Table(dataSource, "country"))
-                .hasNumberOfRows(1)
-                .row(0)
-        Assertions.assertThat(Table(dataSource, "city"))
-                .hasNumberOfRows(0)
+        //確認
+        changees.setEndPointNow()
+        Assertions.assertThat(changees).hasNumberOfChanges(0)
     }
 }
 
